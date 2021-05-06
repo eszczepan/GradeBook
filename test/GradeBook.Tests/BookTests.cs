@@ -9,9 +9,9 @@ namespace GradeBook.Tests
     public void BookCanAddLetterGrades()
     {
       var book = new Book("");
-      book.AddLetterGrade('B');
-      book.AddLetterGrade('A');
-      book.AddLetterGrade('C');
+      book.AddGrade('B');
+      book.AddGrade('A');
+      book.AddGrade('C');
 
       var result = book.GetStats();
 
