@@ -1,13 +1,66 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace GradeBook
 {
   public delegate void GradeAddedDelegate(object sender, EventArgs args);
 
-  public class Book
+  public class NamedObject
   {
-    public Book(string name)
+    public NamedObject(string name)
+    {
+      Name = name;
+    }
+    public string Name
+    {
+      get;
+      set;
+    }
+  }
+
+  public interface IBook
+  {
+    void AddGrade(double grade);
+    Stats GetStats();
+    string Name { get; }
+    event GradeAddedDelegate GradeAdded;
+  }
+
+  public abstract class Book : NamedObject, IBook
+  {
+    protected Book(string name) : base(name)
+    {
+    }
+
+    public abstract event GradeAddedDelegate GradeAdded;
+    public abstract void AddGrade(double grade);
+    public abstract Stats GetStats();
+  }
+
+  public class DiskBook : Book
+  {
+    public DiskBook(string name) : base(name)
+    {
+    }
+
+    public override event GradeAddedDelegate GradeAdded;
+
+    public override void AddGrade(double grade)
+    {
+      var writer = File.AppendText($"{Name}.txt");
+      writer.WriteLine(grade);
+    }
+
+    public override Stats GetStats()
+    {
+      throw new NotImplementedException();
+    }
+  }
+
+  public class InMemoryBook : Book
+  {
+    public InMemoryBook(string name) : base(name)
     {
       grades = new List<double>();
       Name = name;
@@ -32,7 +85,7 @@ namespace GradeBook
       }
 
     }
-    public void AddGrade(double grade)
+    public override void AddGrade(double grade)
     {
       if (grade >= 2.0 && grade <= 5.0)
       {
@@ -48,9 +101,9 @@ namespace GradeBook
       }
     }
 
-    public event GradeAddedDelegate GradeAdded;
+    public override event GradeAddedDelegate GradeAdded;
 
-    public Stats GetStats()
+    public override Stats GetStats()
     {
       var result = new Stats();
       result.Average = 0.0;
@@ -85,12 +138,6 @@ namespace GradeBook
       return result;
     }
     private List<double> grades;
-
-    public string Name
-    {
-      get;
-      set;
-    }
 
     public const string CATEGORY = "Science";
   }

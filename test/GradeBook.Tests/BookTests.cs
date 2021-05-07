@@ -8,7 +8,7 @@ namespace GradeBook.Tests
     [Fact]
     public void BookCanAddLetterGrades()
     {
-      var book = new Book("");
+      var book = new InMemoryBook("");
       book.AddGrade('B');
       book.AddGrade('A');
       book.AddGrade('C');
@@ -25,7 +25,7 @@ namespace GradeBook.Tests
     public void BooksCalculatesGrades()
     {
       // arrange
-      var book = new Book("");
+      var book = new InMemoryBook("");
       book.AddGrade(4.5);
       book.AddGrade(2.0);
       book.AddGrade(5.0);
