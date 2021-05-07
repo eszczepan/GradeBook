@@ -60,7 +60,18 @@ namespace GradeBook
 
     public override Stats GetStats()
     {
-      throw new NotImplementedException();
+      var result = new Stats();
+      using (var reader = File.OpenText($"{Name}.txt"))
+      {
+        var line = reader.ReadLine();
+        while (line != null)
+        {
+          var number = double.Parse(line);
+          result.Add(number);
+          line = reader.ReadLine();
+        }
+      }
+      return result;
     }
   }
 
@@ -91,6 +102,20 @@ namespace GradeBook
       }
 
     }
+    public override event GradeAddedDelegate GradeAdded;
+
+    public override Stats GetStats()
+    {
+      var result = new Stats();
+
+      for (var i = 0; i < grades.Count; i++)
+      {
+        result.Add(grades[i]);
+      }
+
+      return result;
+    }
+
     public override void AddGrade(double grade)
     {
       if (grade >= 2.0 && grade <= 5.0)
@@ -106,45 +131,6 @@ namespace GradeBook
         throw new ArgumentException($"Invalid {nameof(grade)}");
       }
     }
-
-    public override event GradeAddedDelegate GradeAdded;
-
-    public override Stats GetStats()
-    {
-      var result = new Stats();
-      result.Average = 0.0;
-      result.Low = double.MaxValue;
-      result.High = double.MinValue;
-
-      foreach (var grade in grades)
-      {
-        result.Low = Math.Min(grade, result.Low);
-        result.High = Math.Max(grade, result.High);
-        result.Average += grade;
-      }
-
-      result.Average /= grades.Count;
-
-      switch (result.Average)
-      {
-        case var d when d >= 5.0:
-          result.Letter = 'A';
-          break;
-        case var d when d >= 4.0:
-          result.Letter = 'B';
-          break;
-        case var d when d >= 3.0:
-          result.Letter = 'C';
-          break;
-        default:
-          result.Letter = 'F';
-          break;
-      }
-
-      return result;
-    }
     private List<double> grades;
-
-    public const string CATEGORY = "Science";
   }
 }
